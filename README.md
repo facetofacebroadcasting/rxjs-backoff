@@ -1,5 +1,5 @@
 # rxjs-backoff
-
+Add retries to your promises when using rxjs.
 ## Getting Started
 ```shell
 npm install --save rxjs-backoff
