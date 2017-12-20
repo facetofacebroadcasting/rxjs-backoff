@@ -14,13 +14,6 @@ const DEFAULT_INITIAL_DELAY = 100;
 const DEFAULT_MULTIPLIER = 2;
 
 
-function validatePromise(func) {
-	if (typeof func !== 'function') {
-		throw new Error('ExpBackoff: \'promise\' must be a function');
-	}
-	return func;
-}
-
 function validateRetryWhen(func) {
 	if (typeof func !== 'function') {
 		return () => true;
@@ -56,9 +49,7 @@ function validateMultiplier(mult) {
 	return DEFAULT_MULTIPLIER;
 }
 
-
-function source(args) {
-	const promise = validatePromise(args.promise);
+function backoff(args) {
 	const retryWhen = validateRetryWhen(args.retryWhen);
 	const maxRetries = validateMaxRetries(args.maxRetries);
 	const maxDelay = validateMaxDelay(args.maxDelay);
@@ -69,9 +60,7 @@ function source(args) {
 		// eslint-disable-next-line no-restricted-properties
 		Math.min(initialDelay * Math.pow(multiplier, (retryAttempt - 1)), maxDelay);
 
-
-	return Observable
-		.defer(() => promise())
+	return this
 		.retryWhen((errors) => {
 			let retryAttempt = 0;
 
@@ -88,4 +77,4 @@ function source(args) {
 		});
 }
 
-module.exports = source;
+Observable.prototype.backoff = backoff;
