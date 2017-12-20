@@ -1,0 +1,28 @@
+{
+  "name": "rxjs-backoff",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/tape test/**/*.spec.js | node_modules/.bin/tap-spec",
+    "eslint": "node node_modules/eslint/bin/eslint.js --ignore-path .eslintignore -c .eslintrc.yml ./",
+    "precommit": "npm-run-all --parallel test eslint"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "rxjs": "5.5.5"
+  },
+  "devDependencies": {
+    "eslint": "3.19.0",
+    "eslint-config-airbnb-base": "11.2.0",
+    "eslint-plugin-import": "2.2.0",
+    "husky": "0.14.3",
+    "npm-run-all": "4.1.1",
+    "tap-spec": "4.1.1",
+    "tape": "4.8.0"
+  }
+}

@@ -1,0 +1,38 @@
+env:
+  browser: false
+  es6: true
+  node: true
+
+parserOptions:
+  sourceType: module
+  # ecmaVersion: 6
+
+extends:
+  - airbnb-base
+
+rules:
+  indent:
+    - error
+    - tab
+    - FunctionExpression:
+        body: 1 # warn
+        parameters: 2 # error
+      FunctionDeclaration:
+        body: 1
+        paremeters: 2
+      CallExpression:
+        arguments: 1
+      SwitchCase: 1
+  no-tabs: off
+  no-console: error
+
+  # Unfortunately I've had to turn this off because there is a bug that affects our 'wrap' function
+  # https://github.com/eslint/eslint/issues/5074
+  # We should still use const wherever possible, we just won't be checking with linter
+  prefer-const: off
+
+  # Allow _id variable name for mongo db. This can be removed if we stop using mongo
+  no-underscore-dangle:
+    - error
+    - allow:
+      - _id
