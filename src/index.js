@@ -60,6 +60,14 @@ function backoff(args) {
 		// eslint-disable-next-line no-restricted-properties
 		Math.min(initialDelay * Math.pow(multiplier, (retryAttempt - 1)), maxDelay);
 
+	const retryOrThrow = (err, retryAttempt) => {
+		if (retryWhen(err) && retryAttempt <= maxRetries) {
+			return Observable.of(err);
+		}
+		return Observable.throw(err);
+	};
+
+
 	return this
 		.retryWhen((errors) => {
 			let retryAttempt = 0;
@@ -67,13 +75,12 @@ function backoff(args) {
 			return errors
 				.mergeMap((err) => {
 					retryAttempt += 1;
-
-					if (retryWhen(err) && retryAttempt <= maxRetries) {
-						return Observable.of(err);
-					}
-					return Observable.throw(err);
+					return retryOrThrow(err, retryAttempt);
 				})
-				.delayWhen(() => Observable.timer(delay(retryAttempt)));
+				.delayWhen(() => Observable.timer(delay(retryAttempt)))
+				// Check after the delay to ensure we should still retry. Result of
+				// retryWhen() may have changed during the timeout.
+				.mergeMap(err => retryOrThrow(err, retryAttempt));
 		});
 }
 

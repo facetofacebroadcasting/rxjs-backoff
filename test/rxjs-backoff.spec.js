@@ -4,6 +4,7 @@ require('../src/index');
 
 const Observable = Rx.Observable;
 
+const now = () => Math.floor(new Date());
 
 // Sample promise. Tell it which attempt you would like it to succeed on
 const succeedOn = (on) => {
@@ -81,6 +82,32 @@ test('Exponential backoff', (t1) => {
 
 		source.subscribe(null, (err) => {
 			t.equal(err, 'error');
+			t.end();
+		});
+	});
+
+	t1.test('does not retry when retryWhen changes to false during delay', (t) => {
+		let shouldRetry = true;
+		const start = now();
+		const prom = succeedOn(2);
+		const source = Observable.of(1)
+			.switchMap(() => Observable
+				.defer(() => prom())
+				.backoff({
+					maxRetries: 1,
+					initialDelay: 500,
+					maxDelay: 500,
+					retryWhen: () => shouldRetry,
+				}),
+			);
+
+		setTimeout(() => {
+			shouldRetry = false;
+		}, 250);
+
+		source.subscribe(null, (err) => {
+			t.equal(err, 'error');
+			t.ok(now() - start > 250);
 			t.end();
 		});
 	});
